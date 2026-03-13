@@ -7,33 +7,38 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
-def make_request(session, url, max_retries=3):
+def make_request(session, url, max_retries=10):
     """Make a single HTTP request using a session with retry logic"""
     for attempt in range(max_retries):
         try:
-            response = session.get(url, timeout=15)  # Increased timeout
+            response = session.post(url, timeout=10)  # Increased for failover scenarios
             if response.status_code in (204, 200):
                 return True
             elif response.status_code == 500 and attempt < max_retries - 1:
                 # Server error, retry with backoff
-                time.sleep(0.05 * (attempt + 1))
+                time.sleep(0.1 * (attempt + 1))  # Increased backoff for failover
                 continue
         except requests.exceptions.Timeout:
             if attempt < max_retries - 1:
-                time.sleep(0.05 * (attempt + 1))
+                time.sleep(0.1 * (attempt + 1))  # Increased backoff
                 continue
             print(f"\nRequest timeout after {max_retries} attempts")
         except Exception as e:
             if attempt < max_retries - 1:
-                time.sleep(0.05 * (attempt + 1))
+                time.sleep(0.1 * (attempt + 1))  # Increased backoff
                 continue
             print(f"\nRequest failed after {max_retries} attempts: {e}")
     return False
 
 
-def make_requests_sequential(base_url, num_requests, progress_callback=None):
+def make_requests_sequential(base_url, num_requests, write_concern=None, progress_callback=None):
     """Make requests sequentially from a single client"""
-    url = f"{base_url}/inc"
+    # Construct URL with query parameter if write_concern is specified
+    if write_concern:
+        url = f"{base_url}/inc?w={write_concern}"
+    else:
+        url = f"{base_url}/inc"
+    
     start_time = time.time()
     
     # Use session for connection pooling with keep-alive
@@ -51,12 +56,16 @@ def make_requests_sequential(base_url, num_requests, progress_callback=None):
     return end_time - start_time
 
 
-def make_requests_parallel(base_url, num_requests, num_clients, progress_callback=None):
+def make_requests_parallel(base_url, num_requests, num_clients, write_concern=None, progress_callback=None):
     """
     Make requests in parallel using multiple clients
     Each client makes (num_requests) requests
     """
-    url = f"{base_url}/inc"
+    # Construct URL with query parameter if write_concern is specified
+    if write_concern:
+        url = f"{base_url}/inc?w={write_concern}"
+    else:
+        url = f"{base_url}/inc"
     
     start_time = time.time()
     

@@ -18,12 +18,12 @@ WRITE_CONCERN = os.getenv('WRITE_CONCERN', 'majority')
 
 client = MongoClient(
     MONGO_URI,
-    maxPoolSize=100,  # Increased connection pool for concurrent requests
-    minPoolSize=20,
+    maxPoolSize=200,  # Increased connection pool for high concurrency
+    minPoolSize=50,
     maxIdleTimeMS=45000,
-    serverSelectionTimeoutMS=5000,
-    connectTimeoutMS=10000,
-    socketTimeoutMS=10000
+    serverSelectionTimeoutMS=30000,  # Increased for failover scenarios
+    connectTimeoutMS=10000,   # Increased to handle failover
+    socketTimeoutMS=10000     # Increased to handle failover
 )
 db = client['counter_db']
 counters = db['counters']
@@ -178,8 +178,8 @@ if __name__ == '__main__':
             app,
             host='0.0.0.0',
             port=8082,
-            threads=200,  # Increased threads for better concurrency
-            channel_timeout=60  # Increased timeout for slow requests
+            threads=100,  # Optimized for concurrent requests
+            channel_timeout=30  # Reasonable timeout
         )
     except ImportError:
         print("Server: Flask (Development - Install waitress for better performance)")

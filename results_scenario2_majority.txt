@@ -1,0 +1,33 @@
+MongoDB Replication Performance Testing - Scenario 2
+======================================================================
+Write Concern: w:majority
+No Primary Failover
+======================================================================
+
+Test Time: 2026-03-12 23:50:52
+
+Configuration:
+  Write Concern: w=majority
+  Number of clients: 10
+  Requests per client: 10,000
+  Total requests sent: 100,000
+
+Results:
+  Final count in MongoDB: 100,000
+  Expected count: 100,000
+  Lost updates: 0
+  Success rate: 100.00%
+  Time elapsed: 579.14 seconds
+  Requests per second: 172.67
+
+----------------------------------------------------------------------
+Performance Summary:
+----------------------------------------------------------------------
+MongoDB handled 172.67 requests/second
+with 10 concurrent clients using w:majority.
+
+Key Observations:
+- w:majority provides durability (writes acknowledged by majority)
+- Slower than w:1 due to replication wait
+- Suitable for critical data where consistency is priority
+- Protects against data loss during primary failure (see Scenario 4)

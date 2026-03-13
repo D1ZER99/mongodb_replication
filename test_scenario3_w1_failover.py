@@ -74,14 +74,12 @@ def run_test():
     print("*** NOW: WAIT FOR PROGRESS TO REACH 20-30%, THEN STOP PRIMARY NODE ***")
     print("*"*70 + "\n")
     
-    # Update URL to include write concern parameter
-    test_url = f"{BASE_URL}?w={WRITE_CONCERN}"
-    
     start_time = time.time()
     elapsed_time = make_requests_parallel(
-        test_url, 
+        BASE_URL, 
         REQUESTS_PER_CLIENT, 
-        NUM_CLIENTS, 
+        NUM_CLIENTS,
+        write_concern=WRITE_CONCERN,
         progress_callback=progress_tracker
     )
     

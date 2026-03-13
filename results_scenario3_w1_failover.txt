@@ -1,0 +1,37 @@
+MongoDB Replication Performance Testing - Scenario 3
+======================================================================
+Write Concern: w:1 (Primary Only)
+WITH PRIMARY FAILOVER DURING TEST
+======================================================================
+
+Test Time: 2026-03-13 00:20:34
+
+Configuration:
+  Write Concern: w=1
+  Failover: Yes (primary stopped during test)
+  Number of clients: 10
+  Requests per client: 10,000
+  Total requests sent: 100,000
+
+Results:
+  Final count in MongoDB: 99,748
+  Expected count: 100,000
+  Lost updates: 252
+  Success rate: 99.75%
+  Loss rate: 0.25%
+  Time elapsed: 1467.84 seconds
+  Requests per second: 68.13
+
+----------------------------------------------------------------------
+Performance Summary:
+----------------------------------------------------------------------
+MongoDB handled 68.13 requests/second
+with 10 concurrent clients using w:1.
+Primary failover occurred during test.
+
+Key Observations:
+- 252 updates were lost during failover
+- w:1 acknowledges writes before replication
+- Uncommitted writes on failed primary are rolled back
+- Clients automatically reconnected to new primary
+- Use w:majority for critical data (see Scenario 4)
