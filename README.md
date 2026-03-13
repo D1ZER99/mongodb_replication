@@ -50,7 +50,6 @@ See main project README for replica set setup instructions.
 ### 1. Install Python Dependencies
 
 ```bash
-cd web-counter
 pip install -r requirements.txt
 ```
 
@@ -492,7 +491,6 @@ For issues or questions:
 docker-compose up -d
 
 # 2. Start web application
-cd web-counter
 python app_mongodb.py
 
 # 3. Run tests (in new terminal)
